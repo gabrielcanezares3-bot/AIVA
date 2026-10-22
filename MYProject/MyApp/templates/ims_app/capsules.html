@@ -1,0 +1,66 @@
+{% extends "ims_app/base.html" %}
+{% block title %}My Capsules — AIVA{% endblock %}
+{% block content %}
+<section>
+    <header class="aiva-page-intro" data-aiva-reveal>
+        <div class="aiva-eyebrow">The private archive</div>
+        <h1 class="aiva-page-title">Time, held in words.</h1>
+        <p class="aiva-page-sub">Search, revisit, or wait for the moment each capsule is meant to return.</p>
+    </header>
+
+    <form method="get" class="aiva-search" role="search" data-aiva-reveal>
+        <input class="aiva-input" type="search" name="q" value="{{ query }}" placeholder="Search titles or messages..." aria-label="Search capsule titles and messages">
+        <select class="aiva-select" name="category" aria-label="Filter by category">
+            <option value="">All categories</option>
+            {% for value,label in categories %}<option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+        <select class="aiva-select" name="status" aria-label="Filter by status">
+            <option value="">All statuses</option>
+            {% for value,label in statuses %}<option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+        <div class="aiva-date-filter">
+            <label for="{{ date_filter_form.created_after.id_for_label }}">{{ date_filter_form.created_after.label }}</label>
+            {{ date_filter_form.created_after }}
+            {{ date_filter_form.created_after.errors }}
+        </div>
+        <div class="aiva-date-filter">
+            <label for="{{ date_filter_form.created_before.id_for_label }}">{{ date_filter_form.created_before.label }}</label>
+            {{ date_filter_form.created_before }}
+            {{ date_filter_form.created_before.errors }}
+        </div>
+        <button class="aiva-button" type="submit">Filter archive</button>
+        {{ date_filter_form.non_field_errors }}
+    </form>
+
+    {% if capsules %}
+    <div class="aiva-list">
+        {% for capsule in capsules %}
+        <a href="{% url 'capsule_detail' capsule.capsule_id %}" class="aiva-list-card aiva-glass" data-aiva-reveal>
+            <div>
+                <div class="aiva-category">{{ capsule.category }}</div>
+                <h2>{{ capsule.title }}</h2>
+                <p>Created {{ capsule.created_date|date:"M d, Y" }}</p>
+            </div>
+            <div class="aiva-list-meta">
+                {% if capsule.status == "Opened" %}
+                    <span class="aiva-badge aiva-badge--opened">✦ Opened</span>
+                {% elif capsule.is_ready_to_open %}
+                    <span class="aiva-badge aiva-badge--ready">◉ Ready</span>
+                {% else %}
+                    <span class="aiva-badge">🔒 Sealed</span>
+                {% endif %}
+                <strong>Unlocks {{ capsule.unlock_date|date:"M d, Y" }}</strong>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="aiva-empty aiva-glass" data-aiva-reveal>
+        <div class="aiva-empty-mark" aria-hidden="true">◌</div>
+        <h3>No capsules found.</h3>
+        <p>Try another search or create a new memory for your future self.</p>
+        <a href="{% url 'capsule_create' %}" class="aiva-button">+ Write a capsule</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

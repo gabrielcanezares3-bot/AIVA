@@ -1,0 +1,99 @@
+{% extends "ims_app/base.html" %}
+{% block title %}AIVA — A Letter Into a Vanishing Age{% endblock %}
+{% block content %}
+<section class="aiva-hero">
+    <div class="aiva-hero-copy" data-aiva-reveal style="--aiva-reveal-delay: 100ms">
+        <div class="aiva-eyebrow">A digital time capsule</div>
+        <h1 class="aiva-heading">
+            <span class="aiva-heading-line">Some moments</span>
+            <span class="aiva-heading-line aiva-heading-line--accent">deserve to outlive</span>
+            <span class="aiva-heading-line"><em class="aiva-editorial">the present.</em></span>
+        </h1>
+        <p class="aiva-copy">Preserve your thoughts, dreams, letters, and memories for the person you’ll become. Seal a moment today; let time carry it forward.</p>
+        <div class="aiva-actions">
+            <a href="{% url 'capsule_create' %}" class="aiva-button">✦ Write a capsule</a>
+            <a href="{% url 'capsule_list' %}" class="aiva-button aiva-button--quiet">Enter the archive <span aria-hidden="true">→</span></a>
+        </div>
+    </div>
+</section>
+
+<section class="aiva-section" aria-labelledby="aiva-overview-heading">
+    <div class="aiva-section-heading" data-aiva-reveal>
+        <div>
+            <h2 id="aiva-overview-heading">Your archive, at a glance</h2>
+            <p>Every capsule is a note held for another moment.</p>
+        </div>
+        <span class="aiva-section-note">{{ today|date:"F Y" }}</span>
+    </div>
+    <div class="aiva-stats">
+        <article class="aiva-stat aiva-glass" data-aiva-reveal="scale" style="--aiva-reveal-delay: 0ms"><span class="aiva-stat-number">{{ total_count }}</span><span class="aiva-stat-label">Total capsules</span></article>
+        <article class="aiva-stat aiva-glass" data-aiva-reveal="scale" style="--aiva-reveal-delay: 80ms"><span class="aiva-stat-number">{{ sealed_count }}</span><span class="aiva-stat-label">Sealed</span></article>
+        <article class="aiva-stat aiva-glass" data-aiva-reveal="scale" style="--aiva-reveal-delay: 160ms"><span class="aiva-stat-number">{{ opened_count }}</span><span class="aiva-stat-label">Opened</span></article>
+        <article class="aiva-stat aiva-glass" data-aiva-reveal="scale" style="--aiva-reveal-delay: 240ms"><span class="aiva-stat-number">{{ upcoming_count }}</span><span class="aiva-stat-label">Upcoming</span></article>
+    </div>
+</section>
+
+<section class="aiva-section" aria-labelledby="aiva-recent-heading">
+    <div class="aiva-section-heading" data-aiva-reveal>
+        <div>
+            <h2 id="aiva-recent-heading">Recently placed</h2>
+            <p>Return to a moment or leave it sealed for later.</p>
+        </div>
+        <a href="{% url 'capsule_list' %}" class="aiva-text-link">View archive →</a>
+    </div>
+
+{% if recent_capsules %}
+<div class="aiva-card-grid">
+{% for capsule in recent_capsules %}
+<article class="aiva-card aiva-glass" data-aiva-reveal="scale">
+    <div class="aiva-card-top">
+        <span class="aiva-category">{{ capsule.category }}</span>
+        {% if capsule.status == "Opened" %}
+            <span class="aiva-badge aiva-badge--opened">✦ Opened</span>
+        {% elif capsule.is_ready_to_open %}
+            <span class="aiva-badge aiva-badge--ready">◉ Ready to open</span>
+        {% else %}
+            <span class="aiva-badge">🔒 Sealed</span>
+        {% endif %}
+    </div>
+    <h3>{{ capsule.title }}</h3>
+    {% if capsule.status == "Opened" %}
+    <p class="aiva-card-copy">{{ capsule.message|truncatechars:130 }}</p>
+    {% else %}
+    <p class="aiva-card-copy">A message held privately until its appointed day.</p>
+    {% endif %}
+    <div class="aiva-card-meta"><span>Created</span><strong>{{ capsule.created_date|date:"M d, Y" }}</strong></div>
+    <div class="aiva-card-meta"><span>{% if capsule.status == "Opened" %}Opened{% else %}Unlock{% endif %}</span><strong>{{ capsule.unlock_date|date:"M d, Y" }}</strong></div>
+    <a href="{% url 'capsule_detail' capsule.capsule_id %}" class="aiva-button aiva-button--quiet aiva-card-link">View capsule</a>
+</article>
+{% endfor %}
+</div>
+{% else %}
+<div class="aiva-empty aiva-glass" data-aiva-reveal>
+    <div class="aiva-empty-mark" aria-hidden="true">✉</div>
+    <h3>Your future self hasn't received a letter yet.</h3>
+    <p>Create your first time capsule and leave something meaningful behind.</p>
+    <a href="{% url 'capsule_create' %}" class="aiva-button">Create your first capsule</a>
+</div>
+{% endif %}
+</section>
+
+{% if upcoming_capsules %}
+<section class="aiva-section" aria-labelledby="aiva-upcoming-heading">
+<div class="aiva-section-heading" data-aiva-reveal>
+    <div><h2 id="aiva-upcoming-heading">Coming back to you</h2><p>Time is carrying these notes toward their opening day.</p></div>
+    <span class="aiva-section-note">Upcoming unlocks</span>
+</div>
+<div class="aiva-card-grid">
+{% for capsule in upcoming_capsules %}
+<article class="aiva-card aiva-glass" data-aiva-reveal="scale">
+    <div class="aiva-card-top"><span class="aiva-category">{{ capsule.category }}</span><span class="aiva-badge">⏳ {{ capsule.days_until_unlock }} day{{ capsule.days_until_unlock|pluralize }}</span></div>
+    <h3>{{ capsule.title }}</h3>
+    <p class="aiva-card-copy">Sealed away until {{ capsule.unlock_date|date:"F d, Y" }}.</p>
+    <a href="{% url 'capsule_detail' capsule.capsule_id %}" class="aiva-text-link">View capsule →</a>
+</article>
+{% endfor %}
+</div>
+</section>
+{% endif %}
+{% endblock %}

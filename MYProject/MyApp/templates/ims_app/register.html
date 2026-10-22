@@ -1,0 +1,26 @@
+{% extends "ims_app/base.html" %}
+{% block title %}Create account — AIVA{% endblock %}
+{% block content %}
+<section class="aiva-form-panel aiva-glass" data-aiva-reveal="scale">
+    <div class="aiva-eyebrow">AIVA / Begin</div>
+    <h1 class="aiva-page-title">Make room for what lasts.</h1>
+    <p class="aiva-page-sub">Create an account to keep your letters and memories in a private archive.</p>
+
+    <form method="post" class="aiva-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+        <div class="aiva-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<div class="aiva-field-help">{{ field.help_text }}</div>{% endif %}
+            {{ field.errors }}
+        </div>
+        {% endfor %}
+        <div class="aiva-actions aiva-form-actions">
+            <button type="submit" class="aiva-button">Create account</button>
+            <a href="{% url 'login' %}" class="aiva-button aiva-button--quiet">I already have an account</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

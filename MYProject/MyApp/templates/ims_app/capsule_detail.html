@@ -1,0 +1,58 @@
+{% extends "ims_app/base.html" %}
+{% block title %}{{ capsule.title }} — AIVA{% endblock %}
+{% block content %}
+<section class="aiva-detail-panel aiva-glass" data-aiva-reveal="scale">
+    <div class="aiva-detail-top">
+        <div>
+            <div class="aiva-category">{{ capsule.category }}</div>
+            <h1 class="aiva-detail-title">{{ capsule.title }}</h1>
+        </div>
+        <div>
+            {% if capsule.status == "Opened" %}
+                <span class="aiva-badge aiva-badge--opened">✦ Opened</span>
+            {% elif can_open %}
+                <span class="aiva-badge aiva-badge--ready">◉ Ready to open</span>
+            {% else %}
+                <span class="aiva-badge">🔒 Sealed</span>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if can_open and capsule.status != "Opened" %}
+    <div class="aiva-notice">The waiting period is over. Open this capsule when you are ready to meet the words you left here.</div>
+    {% elif capsule.status != "Opened" %}
+    <div class="aiva-notice">This capsule is still sealed. Its words are waiting until {{ capsule.unlock_date|date:"F d, Y" }}{% if capsule.days_until_unlock %} — {{ capsule.days_until_unlock }} day{{ capsule.days_until_unlock|pluralize }} to go.{% endif %}</div>
+    {% endif %}
+
+    {% if capsule.status == "Opened" %}
+    <div class="aiva-reading-panel"><p>{{ capsule.message }}</p></div>
+    {% else %}
+    <div class="aiva-sealed-artifact" aria-label="Sealed capsule contents are hidden until opening">
+        <div>
+            <div class="aiva-sealed-icon" aria-hidden="true">✧</div>
+            <p>Its message remains sealed.<br>Return when its time has come.</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="aiva-detail-meta">
+        <div class="aiva-meta-box"><span>Capsule ID</span><strong>#{{ capsule.capsule_id }}</strong></div>
+        <div class="aiva-meta-box"><span>Created</span><strong>{{ capsule.created_date|date:"F d, Y • h:i A" }}</strong></div>
+        <div class="aiva-meta-box"><span>Unlock date</span><strong>{{ capsule.unlock_date|date:"F d, Y" }}</strong></div>
+    </div>
+
+    <div class="aiva-actions aiva-detail-actions">
+        {% if can_open and capsule.status != "Opened" %}
+        <form method="post" action="{% url 'capsule_open' capsule.capsule_id %}" style="display:inline">
+            {% csrf_token %}
+            <button class="aiva-button" type="submit">✦ Open time capsule</button>
+        </form>
+        {% endif %}
+        {% if capsule.status != "Opened" %}
+        <a href="{% url 'capsule_edit' capsule.capsule_id %}" class="aiva-button aiva-button--quiet">Edit capsule</a>
+        {% endif %}
+        <a href="{% url 'capsule_delete' capsule.capsule_id %}" class="aiva-button aiva-button--danger">Delete</a>
+        <a href="{% url 'capsule_list' %}" class="aiva-button aiva-button--quiet">Back to archive</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "ims_app/base.html" %}
+{% block title %}Delete Capsule — AIVA{% endblock %}
+{% block content %}
+<section class="aiva-danger-panel aiva-glass" data-aiva-reveal="scale">
+    <div class="aiva-eyebrow">AIVA / Delete</div>
+    <h1>Let this memory go?</h1>
+    <p>You are about to permanently delete <strong>“{{ capsule.title }}”</strong>. This action cannot be undone.</p>
+    <form method="post" class="aiva-actions aiva-danger-actions">
+        {% csrf_token %}
+        <button type="submit" class="aiva-button aiva-button--danger">Delete permanently</button>
+        <a href="{% url 'capsule_detail' capsule.capsule_id %}" class="aiva-button aiva-button--quiet">Keep capsule</a>
+    </form>
+</section>
+{% endblock %}

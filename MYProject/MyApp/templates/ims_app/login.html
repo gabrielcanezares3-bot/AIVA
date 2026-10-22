@@ -1,0 +1,26 @@
+{% extends "ims_app/base.html" %}
+{% block title %}Sign in — AIVA{% endblock %}
+{% block content %}
+<section class="aiva-form-panel aiva-glass" data-aiva-reveal="scale">
+    <div class="aiva-eyebrow">AIVA / Welcome back</div>
+    <h1 class="aiva-page-title">Return to your archive.</h1>
+    <p class="aiva-page-sub">Sign in to revisit the words you have saved for another day.</p>
+
+    <form method="post" class="aiva-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+        <div class="aiva-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {{ field.errors }}
+        </div>
+        {% endfor %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+        <div class="aiva-actions aiva-form-actions">
+            <button type="submit" class="aiva-button">Sign in</button>
+            <a href="{% url 'register' %}" class="aiva-button aiva-button--quiet">Create an account</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

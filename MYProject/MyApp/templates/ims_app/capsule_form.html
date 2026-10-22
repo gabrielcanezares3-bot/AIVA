@@ -1,0 +1,27 @@
+{% extends "ims_app/base.html" %}
+{% block title %}{{ page_title }} — AIVA{% endblock %}
+{% block content %}
+<section class="aiva-form-panel aiva-glass" data-aiva-reveal="scale">
+    <div class="aiva-eyebrow">AIVA / {% if is_edit %}Edit{% else %}Write{% endif %}</div>
+    <h1 class="aiva-page-title">{{ page_title }}</h1>
+    <p class="aiva-page-sub">
+        {% if is_edit %}Refine what you want your future self to discover.{% else %}Write something worth finding later. Once sealed, time does the waiting.{% endif %}
+    </p>
+
+    <form method="post" class="aiva-form">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="aiva-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {{ field.errors }}
+        </div>
+        {% endfor %}
+
+        <div class="aiva-actions aiva-form-actions">
+            <button type="submit" class="aiva-button">{% if is_edit %}Save changes{% else %}🔒 Seal capsule{% endif %}</button>
+            <a href="{% if is_edit %}{% url 'capsule_detail' capsule.capsule_id %}{% else %}{% url 'capsule_list' %}{% endif %}" class="aiva-button aiva-button--quiet">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

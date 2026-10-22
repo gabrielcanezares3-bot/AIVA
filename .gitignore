@@ -1,0 +1,30 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+.venv_broken/
+venv/
+env/
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+media/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Certificates and private keys
+*.pem
+*.key
+
+# Development files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
